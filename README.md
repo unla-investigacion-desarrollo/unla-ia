@@ -32,4 +32,5 @@ pip show pandas
 Asegúrate de tener Python instalado y, si es necesario, Pandas de forma global para otros proyectos.
 
 Para una guía adicional sobre exploración de datos, consulta este [enlace a Kaggle](https://www.kaggle.com/code/dansbecker/basic-data-exploration).
+
 [Introducción a ML] (https://docs.google.com/document/d/1Ie-IRaUuVi8KXPXWfcmDVh1BT5q7Igm2/edit?rtpof=true#heading=h.gjdgxs)
