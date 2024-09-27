@@ -1,5 +1,8 @@
 import pandas as pd
 from sklearn.tree import DecisionTreeRegressor
+
+from sklearn import tree
+import matplotlib.pyplot as plt
 # Ruta del archivo CSV
 # Asegúrate de que la ruta sea correcta
 melbourne_file_path = 'csv/melb_data.csv'  
@@ -26,7 +29,7 @@ X = melbourne_data[melbourne_features]
 print("Datos del modelo- Subset\n")
 print(X.describe())
 
-melbourne_model = DecisionTreeRegressor(random_state=1)
+melbourne_model = DecisionTreeRegressor(random_state=1, max_depth=3)
 
 # Fit model
 melbourne_model.fit(X, y)
@@ -35,3 +38,7 @@ print("Las predicciones se haran sobre las siguiente 5 casas:")
 print(X.head())
 print("Las predicciones son")
 print(melbourne_model.predict(X.head()))
+
+fig = plt.figure(figsize=(25,20))
+tree.plot_tree(melbourne_model, feature_names=melbourne_features, class_names= y, filled=True)
+plt.show()
