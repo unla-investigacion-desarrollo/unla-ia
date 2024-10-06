@@ -1,44 +1,52 @@
 import pandas as pd
 from sklearn.tree import DecisionTreeRegressor
-
+from sklearn.model_selection import train_test_split
 from sklearn import tree
 import matplotlib.pyplot as plt
-# Ruta del archivo CSV
-# Asegúrate de que la ruta sea correcta
-melbourne_file_path = 'csv/melb_data.csv'  
+from sklearn.metrics import mean_absolute_error
 
-# Leer el archivo CSV en un DataFrame
+# Función para obtener el MAE y entrenar el modelo con diferentes valores de max_leaf_nodes
+def get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y):
+    model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes, random_state=0)
+    model.fit(train_X, train_y)
+    preds_val = model.predict(val_X)
+    mae = mean_absolute_error(val_y, preds_val)
+    return mae, model  # Devuelve el MAE y el modelo entrenado
+
+# Ruta del archivo CSV
+melbourne_file_path = 'csv/melb_data.csv'  
 melbourne_data = pd.read_csv(melbourne_file_path)
 
-print('TABLA. Dataset Original \n', melbourne_data.describe())
-                  #PARTE: MODELIZACIóN
 # Eliminamos filas que tengan valores perdidos
 melbourne_data = melbourne_data.dropna(axis=0)
 
-#y será nuestra predicción
+# Definimos el target (lo que queremos predecir) y las características (features)
 y = melbourne_data.Price
-
-#las columnas de nuestro modelo se llaman "features" y son con las que haremos la predicción
-melbourne_features = ['Rooms', 'Bathroom', 'Landsize', 
-                      'Lattitude', 'Longtitude']
-
-#por conveción, a la data en esas features, se la llama X
+melbourne_features = ['Rooms', 'Bathroom', 'Landsize', 'Lattitude', 'Longtitude']
 X = melbourne_data[melbourne_features]
 
-#vista de los datos que utilizaremos en nuestro modelo
-print("Datos del modelo- Subset\n")
-print(X.describe())
+# Dividir los datos en conjunto de entrenamiento y validación
+train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0)
 
-melbourne_model = DecisionTreeRegressor(random_state=1, max_depth=3)
+# Probar diferentes valores de max_leaf_nodes y almacenar el que da mejor resultado
+best_mae = float('inf')
+best_model = None
+best_leaf_nodes = None
 
-# Fit model
-melbourne_model.fit(X, y)
+for max_leaf_nodes in [5, 10, 20, 30]:  # Cambiar valores si prefieres menos computación
+    mae, model = get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y)
+    print(f"Max leaf nodes: {max_leaf_nodes} \t Mean Absolute Error: {mae}")
+    
+    if mae < best_mae:
+        best_mae = mae
+        best_model = model
+        best_leaf_nodes = max_leaf_nodes
 
-print("Las predicciones se haran sobre las siguiente 5 casas:")
-print(X.head())
-print("Las predicciones son")
-print(melbourne_model.predict(X.head()))
+# Mostrar el mejor modelo con su MAE
+print(f"\nMejor modelo con max_leaf_nodes = {best_leaf_nodes} tiene un MAE de {best_mae}")
 
+# Visualizar el árbol del mejor modelo
 fig = plt.figure(figsize=(25,20))
-tree.plot_tree(melbourne_model, feature_names=melbourne_features, class_names= y, filled=True)
+tree.plot_tree(best_model, feature_names=melbourne_features, filled=True)
 plt.show()
+
