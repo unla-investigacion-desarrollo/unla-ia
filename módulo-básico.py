@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn import tree
 import matplotlib.pyplot as plt
@@ -49,4 +50,10 @@ print(f"\nMejor modelo con max_leaf_nodes = {best_leaf_nodes} tiene un MAE de {b
 fig = plt.figure(figsize=(25,20))
 tree.plot_tree(best_model, feature_names=melbourne_features, filled=True)
 plt.show()
+
+
+forest_model = RandomForestRegressor(random_state=1)
+forest_model.fit(train_X, train_y)
+melb_preds = forest_model.predict(val_X)
+print("Error absoluto promedio en forest_model =", mean_absolute_error(val_y, melb_preds))
 
